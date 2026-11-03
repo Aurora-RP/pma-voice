@@ -105,6 +105,24 @@ SetAudioSubmixOutputVolumes(
 AddAudioSubmixOutput(callEffectId, 1)
 submixIndicies['call'] = callEffectId
 
+-- Radio effect for far call members (client/module/callfilter.lua). Same effect as 'Radio',
+-- but centered instead of panned left.
+local callRadioEffectId = CreateAudioSubmix('CallRadio')
+SetAudioSubmixEffectRadioFx(callRadioEffectId, 0)
+SetAudioSubmixEffectParamInt(callRadioEffectId, 0, GetHashKey('default'), 1)
+SetAudioSubmixOutputVolumes(
+	callRadioEffectId,
+	0,
+	1.0 --[[ frontLeftVolume ]],
+	1.0 --[[ frontRightVolume ]],
+	0.0 --[[ rearLeftVolume ]],
+	0.0 --[[ rearRightVolume ]],
+	1.0 --[[ channel5Volume ]],
+	1.0 --[[ channel6Volume ]]
+)
+AddAudioSubmixOutput(callRadioEffectId, 0)
+submixIndicies['callRadio'] = callRadioEffectId
+
 -- Callback is expected to return data in an array, this is for compatibility sake with js, index 0 should be the name and index 1 should be the submixId
 -- the callback is sent the effectSlot it can register to, not sure if this is needed, but its here for safety
 exports("registerCustomSubmix", function(callback)
@@ -129,6 +147,11 @@ exports("setEffectSubmix", function(type, effectId)
 end)
 
 function restoreDefaultSubmix(plyServerId)
+	-- far call member: the call radio filter's submix is their default
+	if isOnCallRadio and isOnCallRadio(plyServerId) then
+		MumbleSetSubmixForServerId(plyServerId, submixIndicies['callRadio'])
+		return
+	end
 	local submix = Player(plyServerId).state.submix
 	local submixEffect = submixIndicies[submix]
 	if not submix or not submixEffect then
@@ -153,7 +176,11 @@ function toggleVoice(plySource, enabled, moduleType)
 		print(volumes[moduleType])
 		MumbleSetVolumeOverrideByServerId(plySource, enabled and volumes[moduleType])
 		if GetConvarInt('voice_enableSubmix', 1) == 1 then
-			if moduleType then
+			if moduleType == 'call' and isCallRadioFilterActive and isCallRadioFilterActive() then
+				-- the call radio filter decides: plain voice when near, radio when far
+				disableSubmixReset[plySource] = true
+				restoreDefaultSubmix(plySource)
+			elseif moduleType then
 				disableSubmixReset[plySource] = true
 				if submixIndicies[moduleType] then
 					MumbleSetSubmixForServerId(plySource, submixIndicies[moduleType])
@@ -238,9 +265,10 @@ function playMicClicks(clickType)
 end
 
 --- check if player is muted
-exports('isPlayerMuted', function(source)
+function isPlayerMuted(source)
 	return mutedPlayers[source]
-end)
+end
+exports('isPlayerMuted', isPlayerMuted)
 
 --- getter for mutedPlayers
 exports('getMutedPlayers', function()

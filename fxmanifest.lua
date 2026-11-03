@@ -30,9 +30,9 @@ server_scripts {
 
 files {
 	'ui/*.ogg',
-	'ui/css/*.css',
-	'ui/js/*.js',
 	'ui/index.html',
+	'ui/style.css',
+	'ui/app.js',
 }
 
 ui_page 'ui/index.html'
@@ -67,5 +67,11 @@ convar_category 'PMA-Voice' {
 		{ "Voice debug mode",                      "$voice_debugMode",            "CV_INT",    "0" },
 		{ "Disable players being allowed to join", "$voice_externalDisallowJoin", "CV_INT",    "0" },
 		{ "Hide server endpoints in logs",         "$voice_hideEndpoints",        "CV_INT",    "1" },
+		{ "Call radio filter (far call members sound like a radio)", "$voice_callRadioFilter", "CV_INT", "0" },
+		{ "Call radio filter: plain voice closer than (m)", "$voice_callRadioNear", "CV_INT", "20" },
+		{ "Call radio filter: radio further than (m)", "$voice_callRadioFar", "CV_INT", "25" },
+		{ "Call radio filter: unseen members sound like a radio", "$voice_callRadioUnseen", "CV_INT", "1" },
+		{ "Call radio filter check rate (ms)", "$voice_callRadioRate", "CV_INT", "300" },
+		{ "Call talking relay min interval (ms)", "$voice_talkingInterval", "CV_INT", "250" },
 	}
 }

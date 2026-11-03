@@ -1,0 +1,151 @@
+@import url('https://fonts.googleapis.com/css2?family=Rajdhani:wght@600;700&display=swap');
+
+:root {
+	/* Talking is burnt orange, everything else off-white. */
+	--black: #080808;
+	--orange: #F36B16;
+	--white: #F0EDE5;
+	--charcoal: #242424;
+
+	--bg: rgba(8, 8, 8, 0.88);
+	--line: rgba(240, 237, 229, 0.08);
+	--text: var(--white);
+	--muted: rgba(240, 237, 229, 0.55);
+}
+
+* { box-sizing: border-box; margin: 0; padding: 0; }
+
+html, body {
+	width: 100%;
+	height: 100%;
+	overflow: hidden;
+	background: transparent;
+	color: var(--text);
+	font-family: 'Rajdhani', 'Segoe UI', Arial, sans-serif;
+	user-select: none;
+}
+
+.hidden { display: none !important; }
+
+/* Placement --------------------------------------------------------------------- */
+/* In game: left edge, above the minimap. Radar hidden: bottom right. Talkers stack above
+   our own mic. */
+
+#voice {
+	position: absolute;
+	display: flex;
+	flex-direction: column;
+	gap: 4px;
+	left: 1.5vw;
+	bottom: 24vh;
+	align-items: flex-start;
+}
+#voice.corner { left: auto; right: 2vw; bottom: 3vh; align-items: flex-end; }
+
+#talkers { display: flex; flex-direction: column; gap: 4px; align-items: inherit; }
+
+/* Our mic ------------------------------------------------------------------------ */
+
+#me {
+	display: flex;
+	align-items: center;
+	gap: 10px;
+	padding: 6px 12px 6px 6px;
+	background: var(--bg);
+	border: 1px solid var(--line);
+	border-radius: 4px;
+	transition: border-color 0.15s, box-shadow 0.15s;
+}
+
+.tag {
+	display: flex;
+	align-items: center;
+	justify-content: center;
+	width: 26px;
+	height: 26px;
+	flex-shrink: 0;
+	border-radius: 3px;
+	background: rgba(240, 237, 229, 0.06);
+	transition: background 0.15s;
+}
+.tag svg { width: 15px; height: 15px; fill: var(--muted); transition: fill 0.15s; }
+.tag .mic-off { display: none; }
+
+.me-text { display: flex; flex-direction: column; line-height: 1.05; }
+#me-label { font-size: 14px; font-weight: 700; letter-spacing: 0.14em; text-transform: uppercase; }
+#me-sub { font-size: 12px; font-weight: 600; letter-spacing: 0.06em; color: var(--muted); }
+#me-sub:empty { display: none; }
+
+#me.talking { border-color: var(--orange); box-shadow: 0 0 12px rgba(243, 107, 22, 0.25); }
+#me.talking .tag { background: var(--orange); }
+#me.talking .tag svg { fill: var(--black); }
+
+/* Talking on the radio: white instead of orange, like radio talkers below. */
+#me.talking.radio { border-color: var(--white); box-shadow: 0 0 12px rgba(240, 237, 229, 0.2); }
+#me.talking.radio .tag { background: var(--white); }
+#me.talking.radio .bars i { background: var(--white); }
+
+#me.muted .tag .mic { display: none; }
+#me.muted .tag .mic-off { display: block; }
+#me.muted #me-label { color: var(--muted); }
+#me.muted .bars { display: none; }
+
+/* Voice bars: still while quiet, bouncing while talking. */
+.bars { display: flex; align-items: flex-end; gap: 2px; height: 14px; }
+.bars i { width: 3px; height: 4px; border-radius: 1px; background: var(--charcoal); }
+.talking .bars i, .talker .bars i { background: var(--orange); animation: bounce 0.6s ease-in-out infinite; }
+.bars i:nth-child(2) { animation-delay: 0.15s; }
+.bars i:nth-child(3) { animation-delay: 0.3s; }
+
+@keyframes bounce {
+	0%, 100% { height: 4px; }
+	50% { height: 14px; }
+}
+
+/* Talkers ------------------------------------------------------------------------ */
+
+.talker {
+	display: flex;
+	align-items: center;
+	gap: 10px;
+	min-width: 170px;
+	max-width: 280px;
+	padding: 5px 12px 5px 10px;
+	background: var(--bg);
+	border-left: 3px solid var(--orange);
+	border-radius: 0 4px 4px 0;
+	animation: slide-in 0.15s ease-out;
+}
+.corner .talker { border-left: none; border-right: 3px solid var(--orange); border-radius: 4px 0 0 4px; flex-direction: row-reverse; animation-name: slide-in-right; }
+
+.talker .name {
+	flex: 1;
+	overflow: hidden;
+	white-space: nowrap;
+	text-overflow: ellipsis;
+	font-size: 15px;
+	font-weight: 700;
+	letter-spacing: 0.06em;
+}
+.corner .talker .name { text-align: right; }
+
+/* Heard through a radio: the radio itself, or a far call member (call radio filter). */
+.radio-tag {
+	padding: 1px 6px;
+	border-radius: 2px;
+	background: var(--charcoal);
+	color: var(--white);
+	font-size: 11px;
+	font-weight: 700;
+	letter-spacing: 0.14em;
+}
+.talker.radio { border-color: var(--white); }
+.talker.radio .bars i { background: var(--white); }
+
+.talker.leaving { animation: fade-out 0.25s ease-in forwards; }
+
+#more { font-size: 12px; font-weight: 600; letter-spacing: 0.1em; color: var(--muted); padding: 0 4px; text-transform: uppercase; }
+
+@keyframes slide-in { from { opacity: 0; transform: translateX(-12px); } }
+@keyframes slide-in-right { from { opacity: 0; transform: translateX(12px); } }
+@keyframes fade-out { to { opacity: 0; } }

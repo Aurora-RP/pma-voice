@@ -54,7 +54,7 @@ All of the configs here are set using `setr [voice_configOption] [int]` OR `setr
 
 | ConVar                  | Default | Description                                                        | Parameter(s) |
 |-------------------------|---------|--------------------------------------------------------------------|--------------|
-| voice_enableUi               |    1    | Enables the built in user interface                            | int          |
+| voice_enableUi               |    1    | Enables the built in user interface: your own mic (range, call, radio channel) and a list of who is talking (proximity, call and radio). See [setUiStatus / setUiHidden](docs/client-setters/setUiStatus.md) | int          |
 | voice_enableProximityCycle   |    1    | Enables the usage of the F11 proximity key, if disabled players are stuck on the first proximity  | int          |
 | voice_defaultCycle           |   F11   | The default key to cycle the players proximity. You can find a list of valid keys [in the Cfx docs](https://docs.fivem.net/docs/game-references/input-mapper-parameter-ids/keyboard/)                | string       |
 | voice_defaultRadioVolume          |   30   | The default volume to set the radio to (has to be between 1 and 100) *NOTE: Only new joins will have the new value, players that already joined will not.* | float       |
@@ -72,6 +72,12 @@ All of the configs here are set using `setr [voice_configOption] [int]` OR `setr
 | voice_enableSubmix      |    1    | Enables the submix which adds a radio/call style submix to their voice **NOTE: Submixs require native audio** | int          |
 | voice_enableRadioAnim        |   1     | Enables (grab shoulder mic) animation while talking on the radio.          | int          |
 | voice_defaultRadio           |   LMENU  | The default key to use the radio. You can find a list of valid keys [in the FiveM docs](https://docs.fivem.net/docs/game-references/input-mapper-parameter-ids/keyboard/)                             | string       |
+| voice_callRadioFilter   |    0    | Proximity + radio for calls: call members closer than `voice_callRadioNear` sound like their plain voice, members further than `voice_callRadioFar` sound like a radio (in between they keep what they had). Replaces the call submix while on. Can also be switched at runtime, see [setCallRadioFilter](docs/client-setters/setCallRadioFilter.md) | int |
+| voice_callRadioNear     |   20    | Call radio filter: plain voice closer than this (meters) | int |
+| voice_callRadioFar      |   25    | Call radio filter: radio further than this (meters) | int |
+| voice_callRadioUnseen   |    1    | Call radio filter: call members the client can't see (out of streaming range, another routing bucket) sound like a radio | int |
+| voice_callRadioRate     |   300   | Call radio filter: how often distances are checked (ms) | int |
+| voice_talkingInterval   |   250   | Call talking relay (UI talker list): a player's "started talking" reaches the rest of their call at most this often (ms) | int |
 
 ### Sync
 

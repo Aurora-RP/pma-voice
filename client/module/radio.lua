@@ -6,6 +6,11 @@ local radioAnim = {
 	anim = "generic_radio_enter",
 }
 
+---@return number radioChannel the radio channel we're on, 0 for none
+function getRadioChannel()
+	return radioChannel
+end
+
 ---@return boolean isEnabled if radioEnabled is true and LocalPlayer.state.disableRadio is 0 (no bits set)
 function isRadioEnabled()
 	return radioEnabled and LocalPlayer.state.disableRadio == 0

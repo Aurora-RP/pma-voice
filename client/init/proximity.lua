@@ -143,9 +143,6 @@ exports("setListenerOverride", function(enabled)
 	listenerOverride = enabled
 end)
 
--- cache talking status so we only send a nui message when its not the same as what it was before
-local lastTalkingStatus = false
-local lastRadioStatus = false
 local voiceState = "proximity"
 CreateThread(function()
 	TriggerEvent('chat:addSuggestion', '/muteply', 'Mutes the player with the specified id', {
@@ -157,19 +154,7 @@ CreateThread(function()
 		while not MumbleIsConnected() or not isInitialized do
 			Wait(100)
 		end
-		-- Leave the check here as we don't want to do any of this logic
-		if GetConvarInt('voice_enableUi', 1) == 1 then
-			local curTalkingStatus = MumbleIsPlayerTalking(PlayerId()) == 1
-			if lastRadioStatus ~= radioPressed or lastTalkingStatus ~= curTalkingStatus then
-				lastRadioStatus = radioPressed
-				lastTalkingStatus = curTalkingStatus
-				sendUIMessage({
-					usingRadio = lastRadioStatus,
-					talking = lastTalkingStatus
-				})
-			end
-		end
-
+		-- the UI's own state (talking, radio) is sent by client/ui.lua
 		if voiceState == "proximity" then
 			addNearbyPlayers()
 			-- What a name, wowza

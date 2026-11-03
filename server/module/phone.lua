@@ -4,6 +4,7 @@
 function removePlayerFromCall(source, callChannel)
 	logger.verbose('[call] Removed %s from call %s', source, callChannel)
 
+	stopTalkingInCall(source, callChannel)
 	callData[callChannel] = callData[callChannel] or {}
 	for player, _ in pairs(callData[callChannel]) do
 		TriggerClientEvent('pma-voice:removePlayerFromCall', player, source)
